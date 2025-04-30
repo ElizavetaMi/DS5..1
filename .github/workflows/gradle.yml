@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 11
         uses: actions/setup-java@v4
@@ -23,7 +24,25 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build SUT
-        run: java -jar ./artifacts/app-card-delivery.jar &
+        run: java -jar ./artifacts/app-replan-delivery.jar &
+
+      - name: Wait for SUT to be ready
+        run: |
+          for i in {1..20}; do
+            if curl --silent --fail http://localhost:9999; then
+              echo "SUT is up!"
+              break
+            fi
+            echo "Waiting for application to start... Attempt $i"
+            sleep 2
+          done
 
       - name: Run tests
-        run: ./gradlew test --info -Dselenide.headless=true
+        run: ./gradlew test --stacktrace --info -Dselenide.headless=true
+
+      - name: Upload test report (HTML)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test
