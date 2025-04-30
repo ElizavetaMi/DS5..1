@@ -23,12 +23,13 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build SUT
-        run: java -jar ./artifacts/app-ibank.jar &
-
-      - name: Wait for SUT to be ready
+      - name: Build and start the application
         run: |
-          for i in {1..40}; do
+          java -jar ./artifacts/app-ibank.jar &
+
+      - name: Wait for application to be ready
+        run: |
+          for i in {1..30}; do
             if curl --silent --fail http://localhost:9999; then
               echo "SUT is up!"
               break
@@ -37,14 +38,8 @@ jobs:
             sleep 5
           done
 
-      - name: Check if port 9999 is open
-        run: |
-          netstat -tuln | grep 9999 || exit 1
-
       - name: Run tests
-        run: |
-          curl --silent --fail http://localhost:9999 || exit 1
-          ./gradlew test --stacktrace --info -Dselenide.headless=true
+        run: ./gradlew test --stacktrace --info -Dselenide.headless=true
 
       - name: Upload test report (HTML)
         if: failure()
