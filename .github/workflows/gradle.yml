@@ -24,7 +24,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build SUT
-        run: java -jar ./artifacts/app-replan-delivery.jar &
+        run: java -jar ./artifacts/app-ibank.jar &
 
       - name: Wait for SUT to be ready
         run: |
