@@ -28,13 +28,18 @@ jobs:
 
       - name: Wait for SUT to be ready
         run: |
+          echo "Waiting for application to start..."
           for i in {1..20}; do
-            if curl --silent --fail http://localhost:9999; then
+            if curl --silent --head --fail http://localhost:9999; then
               echo "SUT is up!"
               break
             fi
+            if [ $i -eq 20 ]; then
+              echo "SUT did not start after 20 attempts, failing the build."
+              exit 1
+            fi
             echo "Waiting for application to start... Attempt $i"
-            sleep 2
+            sleep 5
           done
 
       - name: Run tests
@@ -46,3 +51,9 @@ jobs:
         with:
           name: test-report
           path: build/reports/tests/test
+
+      - name: Check running processes
+        run: ps aux
+
+      - name: Check open ports
+        run: sudo netstat -tuln
