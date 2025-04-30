@@ -22,20 +22,8 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build and Run SUT
-        run: |
-          nohup java -jar ./artifacts/app-card-delivery.jar > app.log 2>&1 &
-
-      - name: Wait for app to start
-        run: |
-          until curl --silent --head --fail http://localhost:9999; do
-            echo "Waiting for app to start..."
-            sleep 5
-          done
+      - name: Build SUT
+        run: java -jar ./artifacts/app-card-delivery.jar &
 
       - name: Run tests
         run: ./gradlew test --info -Dselenide.headless=true
-
-      - name: Kill SUT process
-        run: |
-          kill $(lsof -t -i:9999) || true
