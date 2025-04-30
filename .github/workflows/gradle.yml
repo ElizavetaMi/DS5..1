@@ -23,19 +23,18 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build and start the application
-        run: |
-          java -jar ./artifacts/app-ibank.jar &
+      - name: Build and start SUT with test profile
+        run: java -jar ./artifacts/app-ibank.jar -P:profile=test &
 
-      - name: Wait for application to be ready
+      - name: Wait for SUT to be ready
         run: |
-          for i in {1..30}; do
+          for i in {1..20}; do
             if curl --silent --fail http://localhost:9999; then
               echo "SUT is up!"
               break
             fi
             echo "Waiting for application to start... Attempt $i"
-            sleep 5
+            sleep 2
           done
 
       - name: Run tests
