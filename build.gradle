@@ -10,23 +10,23 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'com.codeborne:selenide:6.17.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    testImplementation 'com.github.javafaker:javafaker:1.0.2'
-    testImplementation 'io.rest-assured:rest-assured:5.5.0'
-
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
-
     implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
     implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
+    implementation 'com.google.code.gson:gson:2.8.8'
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testImplementation 'com.codeborne:selenide:6.17.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-
-    implementation 'com.google.code.gson:gson:2.8.8'
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
+    testImplementation 'io.rest-assured:rest-assured:5.5.0'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
 }
 
 test {
@@ -35,10 +35,10 @@ test {
     systemProperty 'file.encoding', 'UTF-8'
     jvmArgs '-Dfile.encoding=UTF-8'
 
+
     systemProperty 'selenide.headless', 'true'
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
-

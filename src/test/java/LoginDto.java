@@ -1,9 +1,9 @@
-public class LoginDto {
-    private final String login;
-    private final String password;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-    public LoginDto(String login, String password) {
-        this.login = login;
-        this.password = password;
-    }
+@Data
+@AllArgsConstructor
+public class LoginDto {
+    private String login;
+    private String password;
 }

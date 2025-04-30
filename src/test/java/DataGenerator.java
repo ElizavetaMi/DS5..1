@@ -12,7 +12,7 @@ public class DataGenerator {
 
     private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
-            .setPort(9999)
+            .setPort(9999)  // Указываем порт
             .setAccept(ContentType.JSON)
             .setContentType(ContentType.JSON)
             .log(LogDetail.ALL)
@@ -21,22 +21,15 @@ public class DataGenerator {
     public static RegistrationDto createUser(String status) {
         String login = faker.name().username();
         String password = faker.internet().password();
-        RegistrationDto user = new RegistrationDto(login, password, status);
+        return new RegistrationDto(login, password, status);
+    }
 
-        Response response = given()
+    public static Response sendCreateUserRequest(RegistrationDto user) {
+        return given()
                 .spec(requestSpec)
                 .body(user)
                 .when()
                 .post("/api/system/users");
-
-        response.then().log().all();
-
-        if (response.statusCode() == 200) {
-            return user;
-        } else {
-            System.out.println("Error response: " + response.asString());
-            return null;
-        }
     }
 }
 
