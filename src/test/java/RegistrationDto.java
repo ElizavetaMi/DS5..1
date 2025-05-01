@@ -1,16 +1,14 @@
-import jakarta.validation.constraints.Pattern;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class RegistrationDto {
-
-    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Invalid login")
     private String login;
-
     private String password;
     private String status;
 }
+
+

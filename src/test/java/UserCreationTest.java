@@ -1,10 +1,12 @@
+import com.codeborne.selenide.Condition;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.specification.RequestSpecification;
 import io.restassured.http.ContentType;
-import static org.hamcrest.Matchers.equalTo;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static com.codeborne.selenide.Selenide.*;
 import static io.restassured.RestAssured.given;
 
 public class UserCreationTest {
@@ -15,14 +17,69 @@ public class UserCreationTest {
     static void setUpAll() {
         requestSpec = new RequestSpecBuilder()
                 .setBaseUri("http://localhost")
-                .setPort(9999) // Убедитесь, что ваш сервер работает на порту 9999
+                .setPort(9999)
                 .setAccept(ContentType.JSON)
                 .setContentType(ContentType.JSON)
                 .log(io.restassured.filter.log.LogDetail.ALL)
                 .build();
     }
 
-    // Создание пользователя с активным статусом
+    // Открытие страницы перед каждым UI-тестом
+    @BeforeEach
+    void openLoginPage() {
+        open("http://localhost:9999");
+    }
+
+    // UI ТЕСТЫ
+
+    @Test
+    void shouldLoginWithActiveUser() {
+        var user = DataGenerator.createAndRegisterUser("active");
+
+        $("[data-test-id=login] input").setValue(user.getLogin());
+        $("[data-test-id=password] input").setValue(user.getPassword());
+        $("[data-test-id=action-login]").click();
+
+        $("h2").shouldHave(Condition.text("Личный кабинет")); // проверка успешного входа
+    }
+
+    @Test
+    void shouldNotLoginWithBlockedUser() {
+        var user = DataGenerator.createAndRegisterUser("blocked");
+
+        $("[data-test-id=login] input").setValue(user.getLogin());
+        $("[data-test-id=password] input").setValue(user.getPassword());
+        $("[data-test-id=action-login]").click();
+
+        $("[data-test-id=error-notification]")
+                .shouldBe(Condition.visible)
+                .shouldHave(Condition.text("Ошибка! Пользователь заблокирован"));
+    }
+
+    @Test
+    void shouldNotLoginWithInvalidPassword() {
+        var user = DataGenerator.createAndRegisterUser("active");
+
+        $("[data-test-id=login] input").setValue(user.getLogin());
+        $("[data-test-id=password] input").setValue("wrongPass");
+        $("[data-test-id=action-login]").click();
+
+        $("[data-test-id=error-notification]").shouldBe(Condition.visible);
+    }
+
+    @Test
+    void shouldNotLoginWithInvalidLogin() {
+        var user = DataGenerator.createAndRegisterUser("active");
+
+        $("[data-test-id=login] input").setValue("wrongLogin");
+        $("[data-test-id=password] input").setValue(user.getPassword());
+        $("[data-test-id=action-login]").click();
+
+        $("[data-test-id=error-notification]").shouldBe(Condition.visible);
+    }
+
+    // API ТЕСТЫ
+
     @Test
     void createActiveUserTest() {
         given()
@@ -31,10 +88,9 @@ public class UserCreationTest {
                 .when()
                 .post("/api/system/users")
                 .then()
-                .statusCode(200); // Успешный код 200
+                .statusCode(200);
     }
 
-    // Создание пользователя с заблокированным статусом
     @Test
     void createBlockedUserTest() {
         given()
@@ -43,40 +99,36 @@ public class UserCreationTest {
                 .when()
                 .post("/api/system/users")
                 .then()
-                .statusCode(200); // Успешный код 200
+                .statusCode(200);
     }
 
-    // Перезапись данных пользователя с тем же логином
     @Test
     void createUserWithExistingLoginTest() {
-        // Создаём пользователя с логином "vasya"
         given()
                 .spec(requestSpec)
                 .body(new RegistrationDto("vasya", "password", "active"))
                 .when()
                 .post("/api/system/users")
                 .then()
-                .statusCode(200); // Успешное создание пользователя
+                .statusCode(200);
 
-        // Попытка создать пользователя с тем же логином, данные будут перезаписаны
         given()
                 .spec(requestSpec)
                 .body(new RegistrationDto("vasya", "newpassword", "active"))
                 .when()
                 .post("/api/system/users")
                 .then()
-                .statusCode(200); // Код 200, данные перезаписаны
+                .statusCode(200);
     }
 
-    // Тест для создания пользователя с пустым паролем
     @Test
     void createUserWithInvalidPasswordTest() {
         given()
                 .spec(requestSpec)
-                .body(new RegistrationDto("newuser", "", "active"))  // Пустой пароль
+                .body(new RegistrationDto("newuser", "", "active"))
                 .when()
                 .post("/api/system/users")
                 .then()
-                .statusCode(200);  // Сервер может возвращать 200, если данные перезаписаны
+                .statusCode(200);
     }
 }
