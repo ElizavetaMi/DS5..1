@@ -51,7 +51,5 @@ jobs:
           name: test-report
           path: build/reports/tests/test
 
-      - name: Show SUT logs if failed
-        if: failure()
-        run: cat sut.log
+
 
