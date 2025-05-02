@@ -33,10 +33,9 @@ public class DataGenerator {
     }
 
     public static RegistrationDto getUserWithInvalidPassword() {
-        return new RegistrationDto("newuser", "", "active");
+        return new RegistrationDto("newuser", "wrongpassword", "active");
     }
 
-    // Новый метод для создания пользователя с неверным логином
     public static RegistrationDto getUserWithInvalidLogin() {
         return new RegistrationDto("invalid_login", "password123", "active");
     }
