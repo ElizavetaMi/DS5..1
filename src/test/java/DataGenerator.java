@@ -1,8 +1,8 @@
 import com.github.javafaker.Faker;
-import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
 
@@ -24,6 +24,18 @@ public class DataGenerator {
         return new RegistrationDto(login, password, status);
     }
 
+    public static RegistrationDto getActiveUser() {
+        return new RegistrationDto("vasya", "password", "active");
+    }
+
+    public static RegistrationDto getBlockedUser() {
+        return new RegistrationDto("ivan", "password123", "blocked");
+    }
+
+    public static RegistrationDto getUserWithInvalidPassword() {
+        return new RegistrationDto("newuser", "", "active");
+    }
+
     public static void sendCreateUserRequest(RegistrationDto user) {
         given()
                 .spec(requestSpec)
@@ -40,4 +52,3 @@ public class DataGenerator {
         return user;
     }
 }
-
