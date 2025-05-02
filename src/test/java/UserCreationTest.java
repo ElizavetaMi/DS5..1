@@ -40,8 +40,10 @@ public class UserCreationTest {
     void shouldNotLoginWithInvalidPassword() {
         var user = DataGenerator.createAndRegisterUser("active");
 
+        String invalidPassword = user.getPassword() + "_wrong";
+
         $("[data-test-id=login] input").setValue(user.getLogin());
-        $("[data-test-id=password] input").setValue("wrongPass");
+        $("[data-test-id=password] input").setValue(invalidPassword);
         $("[data-test-id=action-login]").click();
 
         $("[data-test-id=error-notification]").shouldBe(Condition.visible);
@@ -51,7 +53,9 @@ public class UserCreationTest {
     void shouldNotLoginWithInvalidLogin() {
         var user = DataGenerator.createAndRegisterUser("active");
 
-        $("[data-test-id=login] input").setValue("wrongLogin");
+        String invalidLogin = user.getLogin() + "_invalid";
+
+        $("[data-test-id=login] input").setValue(invalidLogin);
         $("[data-test-id=password] input").setValue(user.getPassword());
         $("[data-test-id=action-login]").click();
 

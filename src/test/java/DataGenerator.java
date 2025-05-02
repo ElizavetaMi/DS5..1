@@ -36,6 +36,11 @@ public class DataGenerator {
         return new RegistrationDto("newuser", "", "active");
     }
 
+    // Новый метод для создания пользователя с неверным логином
+    public static RegistrationDto getUserWithInvalidLogin() {
+        return new RegistrationDto("invalid_login", "password123", "active");
+    }
+
     public static void sendCreateUserRequest(RegistrationDto user) {
         given()
                 .spec(requestSpec)
